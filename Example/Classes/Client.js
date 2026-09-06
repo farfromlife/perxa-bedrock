@@ -4,6 +4,8 @@ class Client extends BedrockClient {
     constructor(networkId, flow) {
         super({ authflow: flow, networkId })
 
+        this.dateNow = Date.now()
+
         this.networkId = networkId;
         this.flow = flow;
 
@@ -23,6 +25,9 @@ class Client extends BedrockClient {
             .then(() => {
                 this.connect()
 
+                this.on('disconnect', _ => console.log(`Client disconnected from ${this.networkId}`))
+                this.on('kick', _ => console.log(`Client kicked from ${this.networkId}`))
+                
                 this.once('resource_packs_info', () => {
                     const payload = {
                         response_status: 'completed',
@@ -42,10 +47,7 @@ class Client extends BedrockClient {
     }
 
     setupListeners() {
-        this.on('start_game', _ => console.log(`Client connected to ${this.networkId}`))
-
-        this.on('disconnect', _ => console.log(`Client disconnected from ${this.networkId}`))
-        this.on('kick', _ => console.log(`Client kicked from ${this.networkId}`))
+        this.on('start_game', _ => console.log(`Client connected to ${this.networkId} after ${Date.now() - this.dateNow}MS`))
     }
 }
 
